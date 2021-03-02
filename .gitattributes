@@ -1,2 +1,2 @@
 * text=auto
-*.C linguist-language=C++
+*.c linguist-language=cpp
