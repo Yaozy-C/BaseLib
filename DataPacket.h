@@ -118,9 +118,9 @@ namespace Base {
             if (cJSON_IsArray(reader)) {
                 int ArraySize = cJSON_GetArraySize(reader);
                 for (int i = 0; i < ArraySize; ++i) {
-                    cJSON *Item = cJSON_GetArrayItem(reader, i);
+                    cJSON *item = cJSON_GetArrayItem(reader, i);
                     T tmp;
-                    GetJsonValue(Item, tmp);
+                    GetJsonValue(item, tmp);
                     list.emplace_back(tmp);
                 }
             }

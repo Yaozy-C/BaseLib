@@ -54,9 +54,9 @@ namespace Base {
     }
 
     cJSON *cJSON_Create(DataPacket &value) {
-        cJSON *Item = value.CreateWriter();
-        value.EncodeJson(Item);
-        return Item;
+        cJSON *item = value.CreateWriter();
+        value.EncodeJson(item);
+        return item;
     }
 
     /*void DataPacket::Clear() {
