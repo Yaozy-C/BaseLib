@@ -11,6 +11,7 @@
 #include <fstream>
 #include "IndependentThread.h"
 
+#define LOG_TRACE(msg) Base::Trace(msg,__FILE__,__LINE__,__FUNCTION__)
 #define LOG_DEBUG(msg) Base::Debug(msg,__FILE__,__LINE__,__FUNCTION__)
 #define LOG_INFO(msg) Base::Info(msg,__FILE__,__LINE__,__FUNCTION__)
 #define LOG_WARN(msg) Base::Warn(msg,__FILE__,__LINE__,__FUNCTION__)
@@ -18,6 +19,7 @@
 #define LOG_INIT_LOGGER() Base::LogInit()
 #define LOG_INIT_FILELOGGER(msg) Base::LogInit(msg)
 #define LOG_SETLEVEL(level) Base::SetLevel(level)
+#define LOG_SETROLLOVER(day) Base::SetLogRollover(day)
 
 #define ERROR Base::ILog::LOGLEVEL::error
 #define WARN Base::ILog::LOGLEVEL::warn
@@ -33,7 +35,8 @@ namespace Base {
             error = 0,
             warn = 1,
             info = 2,
-            debug = 3
+            debug = 3,
+            trace = 4
         };
 
         ILog() = default;
@@ -45,6 +48,9 @@ namespace Base {
         ILog &operator=(const ILog &) = default;
 
     public:
+
+        virtual void
+        Trace(const std::string &msg, const std::string &file, std::size_t line, const std::string &func) = 0;
 
         virtual void
         Debug(const std::string &msg, const std::string &file, std::size_t line, const std::string &func) = 0;
@@ -73,6 +79,8 @@ namespace Base {
 
     public:
 
+        void Trace(const std::string &msg, const std::string &file, std::size_t line, const std::string &func) override;
+
         void Debug(const std::string &msg, const std::string &file, std::size_t line, const std::string &func) override;
 
         void Info(const std::string &msg, const std::string &file, std::size_t line, const std::string &func) override;
@@ -100,6 +108,8 @@ namespace Base {
 
         FileLogger &operator=(const FileLogger &) = delete;
 
+        void Trace(const std::string &msg, const std::string &file, std::size_t line, const std::string &func) override;
+
         void Debug(const std::string &msg, const std::string &file, std::size_t line, const std::string &func) override;
 
         void Info(const std::string &msg, const std::string &file, std::size_t line, const std::string &func) override;
@@ -110,21 +120,33 @@ namespace Base {
 
         void ReSetLogLevel(ILog::LOGLEVEL level) override;
 
+        void SetLogRollover(const int &day);
+
     private:
-        Logger::LOGLEVEL level;
+        ILog::LOGLEVEL level;
         std::ofstream fileStream;
+
         void Run(std::string &msg) override;
+
+        std::string logName;
+        std::string sevenDaysAgoLogName;
+        int offsetDay;
+        bool rollover;
     };
 
     static std::string GetTime();
 
-    static std::string GetDate();
+    static std::string GetDate(const int &offset);
+
+    static bool FileExists(const std::string &name);
 
     void LogInit();
 
     void LogInit(const std::string &path);
 
     void Debug(const std::string &msg, const std::string &file, std::size_t line, const std::string &func);
+
+    void Trace(const std::string &msg, const std::string &file, std::size_t line, const std::string &func);
 
     void Info(const std::string &msg, const std::string &file, std::size_t line, const std::string &func);
 
@@ -135,6 +157,8 @@ namespace Base {
     void SetLogPath(const std::string &path);
 
     void SetLevel(ILog::LOGLEVEL level);
+
+    void SetLogRollover(const int &day);
 }
 
 
